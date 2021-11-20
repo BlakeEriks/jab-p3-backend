@@ -2,13 +2,28 @@ require('dotenv').config()
 const { PORT = 4000, MONGODB_URL, SECRET, CLIENT_ORIGIN_URL } = process.env;
 const express = require('express')
 const morgan = require('morgan');
-const populateCache = require('./startup');
 const tokenService = require('./tokenService')
 
 const app = express()
 
 app.use(express.json())
 
-populateCache().then(() => {
+app.get('/', (req, res) => {
+    res.json('hello world')
+})
+
+app.get('/tokens/prices', async (req,res) => {
+    res.send(await tokenService.getAllPrices())
+})
+
+app.get('/tokens/prices/:token', async (req,res) => {
+    res.send(await tokenService.getPrice(req.params.token))
+})
+
+app.get('/tokens/history/:token/:period', async (req,res) => {
+    res.send(await tokenService.getPriceHistory(req.params.token, req.params.period))
+})
+
+tokenService.initialize().then(() => {
     app.listen(PORT, () => console.log('listening'))
 })
