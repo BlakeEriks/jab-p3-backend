@@ -4,13 +4,13 @@
 // .env variable
 require("dotenv").config();
 // MONGODB_URL from .env
-const { PORT = 4000, MONGODB_URL } = process.env;
+const { PORT = 4000, MONGODB_URL, SECRET, CLIENT_ORIGIN_URL } = process.env;
 // import express
 const express = require("express");
 const app = express();
 // import middleware
-const cors = require("cors");
 const morgan = require("morgan");
+const cors = require("cors");
 // import mongoose
 const mongoose = require("mongoose");
 // install session
@@ -20,12 +20,15 @@ const brcypt = require("bcryptjs");
 const PortfolioRouter = require("./controllers/portfolio");
 const UserRouter = require("./controllers/user");
 
+const populateCache = require('./startup');
+const tokenService = require('./tokenService')
+
 
 
 ////////////////////////
 // Middleware
 ////////////////////////
-app.use(cors({credentials: true, origin: process.env.CLIENT_ORIGIN_URL}));
+app.use(cors({credentials: true, origin: process.env.CLIENT_ORIGIN_URL}))
 app.use(morgan("dev"));
 app.use(express.json());
 
@@ -47,4 +50,7 @@ app.use(express.json());
 
 
 // Listener
-app.listen(PORT, () => console.log(`listening on PORT ${PORT}`));
+
+populateCache().then(() => {
+    app.listen(PORT, () => console.log('listening'))
+})
