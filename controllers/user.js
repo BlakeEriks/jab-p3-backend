@@ -2,7 +2,7 @@
 const express = require("express");
 const User = require("../models/user");
 const brcypt = require("bcryptjs");
-const session = require("express-session")
+const jwt = require("jsonwebtoken");
 
 // Router
 const router = express.Router();
@@ -24,11 +24,10 @@ router.post("/authenticate", (req, res) => {
             return
         }
 
-        req.session.loggedIn = true
-        req.session.username = username
-        res.json({id: user_id, username: user.username})
-    })
-})
+        const token = await jwt.sign({ username }, SECRET);
+        res.json({token, username})
+    });
+});
 
 // create user
 router.post("/register", (req, res) => {
@@ -40,15 +39,15 @@ router.post("/register", (req, res) => {
             return
         }
 
-        req.session.loggedIn = true
-        req.session.username = user.username
-        res.json({id: user._id, username: user, username})
+        const username = user.username
+        const token = jwt.sign({username: username}, SECRET);
+        res.json({token, username})
     })
 })
 
 // log out
 router.get("/logout", async (req, res) => {
-    req.session.destroy( err => {
+    jwt.destroy( err => {
         if (!err) res.json('Logged out')
     })
 })

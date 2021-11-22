@@ -11,11 +11,10 @@ const app = express();
 // import middleware
 const morgan = require("morgan");
 const cors = require("cors");
+const jwt = require("jsonwebtoken")
+const brcypt = require("bcryptjs");
 // import mongoose
 const mongoose = require("mongoose");
-// install session
-const session = require("express-session");
-const brcypt = require("bcryptjs");
 // routers
 const PortfolioRouter = require("./controllers/portfolio");
 const UserRouter = require("./controllers/user");
@@ -31,6 +30,26 @@ const tokenService = require('./tokenService')
 app.use(cors({credentials: true, origin: process.env.CLIENT_ORIGIN_URL}))
 app.use(morgan("dev"));
 app.use(express.json());
+
+const requireAuth = (req, res, next) => {
+    try{
+        if(req.headers.token) {
+            const token = req.headers.token
+            const payload = jwt.verify(token, SECRET);
+            if(payload) {
+                req.payload = payload;
+                next();
+            } else {
+                res.status(403).json({error: "VERIFICATION FAILED OR NO PAYLOAD"});
+            }
+        } else {
+            res.status(403).json({error: "NO AUTHORIZATION HEADER"});
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(403).json({error});
+    }
+}
 
 
 
