@@ -7,7 +7,9 @@ const populateCache = async (cache) => {
 
     // for (token of tokens) { for each token we care about
         let token = 'BTC'
-        tokenHistoryData = {year : {interval: 86400000, values: []}, 
+        tokenHistoryData = {year : {interval: 172800000, values: []},
+                            sixMonths : {interval: 86400000, values: []}, 
+                            threeMonths : {interval: 43200000, values: []},
                             month : {interval: 28800000, values: []}, 
                             week : {interval: 7200000, values: []},
                             day : {interval: 900000, values: []}}
