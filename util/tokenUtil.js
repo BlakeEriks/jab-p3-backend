@@ -3,27 +3,62 @@ const { getTimePeriods } = require('./dateUtil')
 
 const messariBaseURL = 'https://data.messari.io/api/v1/assets'
 const coinApiBaseURL = 'https://rest.coinapi.io/v1/exchangerate'
-const {today, dayAgo, weekAgo, monthAgo, yearAgo} = getTimePeriods()
+const {today, dayAgo, weekAgo, monthAgo, threeMonthsAgo, sixMonthsAgo, yearAgo} = getTimePeriods()
+const messariPeriods = ['year', 'sixMonths', 'threeMonths']
 
-const formatMessariUrl = (token) => {
-    return `${messariBaseURL}/${token}/metrics/price/time-series?start=${yearAgo.toISOString()}&end=${today.toISOString()}&interval=1d`
+const formatMessariUrl = (token, period) => {
+    return !!token ? `${messariBaseURL}/${token}/metrics/price/time-series?start=${period.toISOString()}&end=${today.toISOString()}&interval=1d`
+        : `${messariBaseURL}?fields=slug,symbol,metrics/market_data/price_usd`
 }
 
-const formatCoinApiUrl = (token, start) => {
-    return `${coinApiBaseURL}/${token}/USD/history?period_id=8HRS&time_start=${start.toISOString()}&time_end=${today.toISOString()}&apikey=${process.env.COIN_API_KEY}`
+const formatCoinApiUrl = (token, start, period) => {
+    return `${coinApiBaseURL}/${token}/USD/history?period_id=${period}&time_start=${start.toISOString()}&time_end=${today.toISOString()}&apikey=${process.env.COIN_API_KEY}`
 }
 
-getTokenHistory = (token, period) => {
-    switch (period) {
-        case '1Y':
-            return got(formatMessariUrl(token))
-        case '1M':
-            return got(formatCoinApiUrl(token, monthAgo))
-        case '1W':
-            return got(formatCoinApiUrl(token, weekAgo))
-        case '1D':
-            return got(formatCoinApiUrl(token, dayAgo))
+const getStaticDataForPeriod = period => {
+    if (period === 'year') return require('../data/btc1y')
+    if (period === 'month') return require('../data/btc1m')
+    if (period === 'week') return require('../data/btc1w')
+    if (period === 'day') return require('../data/btc1d')
+    return require('../data/btc1y')
+}
+
+getTokenHistoryData = async (token, period, useStaticData) => {
+
+    let useMessari = messariPeriods.includes(period)
+    let url = ''
+
+    if (period === 'year') url = formatMessariUrl(token, yearAgo)
+    if (period === 'sixMonths') url = formatMessariUrl(token, sixMonthsAgo)
+    if (period === 'threeMonths') url = formatMessariUrl(token, threeMonthsAgo)
+    if (period === 'month') url = formatCoinApiUrl(token, monthAgo, '8HRS')
+    if (period === 'week') url = formatCoinApiUrl(token, weekAgo, '2HRS')
+    if (period === 'day') url = formatCoinApiUrl(token, dayAgo, '15MIN')
+
+    let body = {}
+
+    if (useStaticData) {
+        body = getStaticDataForPeriod(period)
     }
+    else {
+        const response = useStaticData ? {} : await got(url)
+        body = JSON.parse(response.body)
+    }
+
+    if (useMessari) {
+        let values = body.data.values.map( value => ({timestamp: new Date(value[0]), price: value[1].toFixed(2)}))
+        if (period == 'year') values = values.filter( (v,i) => (i % 2) === 0) /* Remove every other entry from year data to get desired period */
+        return values
+    }
+    else {
+        return body.map( value => ({timestamp: new Date(value.time_period_start), price: value.rate_open.toFixed(2)}))
+    }
+
 }
 
-module.exports = getTokenHistory
+getCurrentTokenPrices = async () => {
+    const response = await got(formatMessariUrl())
+    return JSON.parse(response.body)
+}
+
+module.exports = {getTokenHistoryData, getCurrentTokenPrices}

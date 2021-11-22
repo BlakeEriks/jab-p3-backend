@@ -22,12 +22,10 @@ const UserRouter = require("./controllers/user");
 const populateCache = require('./startup');
 const tokenService = require('./tokenService')
 
-
-
 ////////////////////////
 // Middleware
 ////////////////////////
-app.use(cors({credentials: true, origin: process.env.CLIENT_ORIGIN_URL}))
+app.use(cors())
 app.use(morgan("dev"));
 app.use(express.json());
 
@@ -51,25 +49,22 @@ const requireAuth = (req, res, next) => {
     }
 }
 
+app.get('/', (req, res) => {
+    res.json('hello world')
+})
 
+app.get('/tokens/prices', async (req,res) => {
+    res.json(await tokenService.getAllPrices())
+})
 
-///////////////////////
-// Routes
-///////////////////////
+app.get('/tokens/prices/:token', async (req,res) => {
+    res.json(await tokenService.getPrice(req.params.token))
+})
 
-///////////////////////
-// Portfolio Routes
-///////////////////////
+app.get('/tokens/history/:token/:period', async (req,res) => {
+    res.json(await tokenService.getPriceHistory(req.params.token, req.params.period))
+})
 
-///////////////////////
-// User Routes
-///////////////////////
-
-
-
-
-// Listener
-
-populateCache().then(() => {
+tokenService.initialize().then(() => {
     app.listen(PORT, () => console.log('listening'))
 })
