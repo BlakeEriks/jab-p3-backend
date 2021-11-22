@@ -20,7 +20,6 @@ const PortfolioRouter = require("./controllers/portfolio");
 const UserRouter = require("./controllers/user");
 const TokensRouter = require("./controllers/tokens")
 
-const populateCache = require('./startup');
 
 ////////////////////////
 // Middleware

@@ -1,8 +1,8 @@
 // Dependencies
 const express = require("express")
-const Tokens = require("../models/tokens")
-const tokenService = require('./tokenService')
-
+const tokenService = require('../tokenService')
+const { PORT = 4000, MONGODB_URL, SECRET, CLIENT_ORIGIN_URL } = process.env;
+const app = express();
 
 // Router
 const router = express.Router()
@@ -25,7 +25,7 @@ router.get('/tokens/history/:token/:period', async (req,res) => {
 })
 
 tokenService.initialize().then(() => {
-    router.listen(PORT, () => console.log('listening'))
+    app.listen(PORT, () => console.log('listening'))
 })
 
 
