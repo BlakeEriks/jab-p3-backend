@@ -17,10 +17,11 @@ const formatCoinApiUrl = (token, start, period) => {
 
 const getStaticDataForPeriod = period => {
     if (period === 'year') return require('../data/btc1y')
+    if (period === 'sixMonths') return require('../data/btc6m')
+    if (period === 'threeMonths') return require('../data/btc3m')
     if (period === 'month') return require('../data/btc1m')
     if (period === 'week') return require('../data/btc1w')
     if (period === 'day') return require('../data/btc1d')
-    return require('../data/btc1y')
 }
 
 getTokenHistoryData = async (token, period, useStaticData) => {
