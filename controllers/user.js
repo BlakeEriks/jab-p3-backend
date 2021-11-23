@@ -1,8 +1,10 @@
 // Dependencies
 const express = require("express");
 const User = require("../models/user");
-const brcypt = require("bcryptjs");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Portfolio = require("../models/portfolio");
+const {SECRET} = process.env
 
 // Router
 const router = express.Router();
@@ -18,29 +20,32 @@ router.post("/authenticate", (req, res) => {
             return
         }
 
-        const success = await bcyypt.compare(password, user?.password)
+        const success = await bcrypt.compare(password, user.password)
         if (!success) {
             res.status(400).json('Wrong password')
             return
         }
 
-        const token = await jwt.sign({ username }, SECRET);
+        const token = jwt.sign({ username }, SECRET);
         res.json({token, username})
     });
 });
 
 // create user
-router.post("/register", (req, res) => {
-    req.body.password = await brcypt.hash(req.body.password, await brcypt.genSalt(10))
-
-    User.create(req.body, (err, user) => {
+router.post("/register", async (req, res) => {
+    req.body.password = await bcrypt.hash(req.body.password, await bcrypt.genSalt(10))
+    console.log(req.body)
+    User.create(req.body, async (err, user) => {
         if (err) {
             res.status(400).json('Username taken')
             return
         }
+        /* Initialize User Porfolio */
+        const portfolio = {user_id: user._id, assets: [], balance: 1000000}
+        await Portfolio.create(portfolio)
 
         const username = user.username
-        const token = jwt.sign({username: username}, SECRET);
+        const token = jwt.sign({username}, SECRET);
         res.json({token, username})
     })
 })
