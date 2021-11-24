@@ -15,7 +15,8 @@ const jwt = require("jsonwebtoken")
 // routers
 const PortfolioRouter = require("./controllers/portfolio");
 const UserRouter = require("./controllers/user");
-const TokenRouter = require("./controllers/tokens")
+const TokensRouter = require("./controllers/tokens")
+const tokenService = require('./tokenService')
 
 ////////////////////////
 // Middleware
@@ -45,3 +46,7 @@ const requireAuth = (req, res, next) => {
         res.status(403).json({error});
     }
 }
+
+tokenService.initialize().then(() => {
+    app.listen(PORT, () => console.log('listening'))
+})
