@@ -33,9 +33,10 @@ router.post("/authenticate", (req, res) => {
 
 // create user
 router.post("/register", async (req, res) => {
+  
     req.body.password = await bcrypt.hash(req.body.password, await bcrypt.genSalt(10))
-    console.log(req.body)
     User.create(req.body, async (err, user) => {
+      
         if (err) {
             res.status(400).json('Username taken')
             return

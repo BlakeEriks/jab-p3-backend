@@ -15,8 +15,7 @@ const jwt = require("jsonwebtoken")
 // routers
 const PortfolioRouter = require("./controllers/portfolio");
 const UserRouter = require("./controllers/user");
-
-const tokenService = require('./tokenService')
+const TokenRouter = require("./controllers/tokens")
 
 ////////////////////////
 // Middleware
@@ -25,6 +24,7 @@ app.use(cors())
 app.use(morgan("dev"));
 app.use(express.json());
 app.use("/", UserRouter);
+app.use("/", TokenRouter);
 
 const requireAuth = (req, res, next) => {
     try{
@@ -45,23 +45,3 @@ const requireAuth = (req, res, next) => {
         res.status(403).json({error});
     }
 }
-
-app.get('/', (req, res) => {
-    res.json('hello world')
-})
-
-app.get('/tokens/prices', async (req,res) => {
-    res.json(await tokenService.getAllPrices())
-})
-
-app.get('/tokens/prices/:token', async (req,res) => {
-    res.json(await tokenService.getPrice(req.params.token))
-})
-
-app.get('/tokens/history/:token/:period', async (req,res) => {
-    res.json(await tokenService.getPriceHistory(req.params.token, req.params.period))
-})
-
-tokenService.initialize().then(() => {
-    app.listen(PORT, () => console.log('listening'))
-})
