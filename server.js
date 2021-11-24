@@ -15,7 +15,7 @@ const jwt = require("jsonwebtoken")
 // routers
 const PortfolioRouter = require("./controllers/portfolio");
 const UserRouter = require("./controllers/user");
-const TokensRouter = require("./controllers/tokens")
+const TokenRouter = require("./controllers/token")
 const tokenService = require('./tokenService')
 
 ////////////////////////
