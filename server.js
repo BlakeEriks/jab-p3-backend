@@ -4,7 +4,7 @@
 // .env variable
 require("dotenv").config();
 // MONGODB_URL from .env
-const { PORT = 4000, MONGODB_URL, SECRET, CLIENT_ORIGIN_URL } = process.env;
+const { PORT = 4000, SECRET } = process.env;
 // import express
 const express = require("express");
 const app = express();
@@ -12,9 +12,6 @@ const app = express();
 const morgan = require("morgan");
 const cors = require("cors");
 const jwt = require("jsonwebtoken")
-const brcypt = require("bcryptjs");
-// import mongoose
-const mongoose = require("mongoose");
 // routers
 const PortfolioRouter = require("./controllers/portfolio");
 const UserRouter = require("./controllers/user");
@@ -27,6 +24,8 @@ const tokenService = require('./tokenService')
 app.use(cors())
 app.use(morgan("dev"));
 app.use(express.json());
+app.use("/", UserRouter);
+app.use("/", TokenRouter);
 
 const requireAuth = (req, res, next) => {
     try{

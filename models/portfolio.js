@@ -3,13 +3,9 @@ mongoose = require("./connection")
 
 // portfolio schema
 const PortfolioSchema = new mongoose.Schema({
-    id: String,
-    user_id: String,
-    assets: Object,
+    user_id: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true},
+    assets: Array,
     balance: Number,
-    history: Array,
-    value: Number,
-    img_url: String,
 });
 
 const Portfolio = mongoose.model("Portfolio", PortfolioSchema);
