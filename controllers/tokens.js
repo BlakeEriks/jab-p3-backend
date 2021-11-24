@@ -24,10 +24,5 @@ router.get('/tokens/history/:token/:period', async (req,res) => {
     res.json(await tokenService.getPriceHistory(req.params.token, req.params.period))
 })
 
-tokenService.initialize().then(() => {
-    app.listen(PORT, () => console.log('listening'))
-})
-
-
 // export router
 module.exports = router;
