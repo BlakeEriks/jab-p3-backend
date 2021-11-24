@@ -18,7 +18,7 @@ router.post("/authenticate", (req, res) => {
             return
         }
 
-        const success = await bcyypt.compare(password, user?.password)
+        const success = await bcrypt.compare(password, user?.password)
         if (!success) {
             res.status(400).json('Wrong password')
             return
@@ -30,7 +30,7 @@ router.post("/authenticate", (req, res) => {
 });
 
 // create user
-router.post("/register", (req, res) => {
+router.post("/register", async (req, res) => {
     req.body.password = await brcypt.hash(req.body.password, await brcypt.genSalt(10))
 
     User.create(req.body, (err, user) => {
