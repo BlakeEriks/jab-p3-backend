@@ -3,6 +3,7 @@ const express = require("express");
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const tokenService = require("../tokenService");
 const {SECRET} = process.env
 
 // Router
@@ -62,17 +63,11 @@ router.get("/portfolio/:username", async (req, res) => {
     })
 })
 
-router.get("/portfolio/history/:username", async (req, res) => {
+router.get("/portfolio/history/:username/:period", async (req, res) => {
 
-    User.findOne({username: req.params.username}, (err, user) => {
-
-        if (err || !user) {
-            res.status(400).json('User portfolio not found')
-            return
-        }
-
-        res.json(user.portfolio)
-
+    User.findOne({username: req.params.username}, (err,user) => {
+        
+        res.json( tokenService.getPortfolioPriceHistory(user.portfolio, req.params.period))
     })
 })
 
@@ -80,7 +75,7 @@ router.post("/portfolio/:username", async (req, res) => {
 
     const user = await User.findOne({username: req.params.username})
     user.portfolio.push({...req.body, timestamp: new Date()})
-    console.log(user)
+
     try {
         res.json(await User.findByIdAndUpdate(user._id, user, {new: true}))
     }
