@@ -1,5 +1,4 @@
 // Depenencies
-require("dotenv").config()
 const mongoose = require("mongoose")
 
 // Database Connection
