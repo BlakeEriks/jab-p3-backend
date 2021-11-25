@@ -1,4 +1,5 @@
 const {populateCache, runCacheUpdateWorker} = require("./cache")
+const constructPortfolioHistoryData = require("./util/portfolio")
 
 const tokenCache = []
 const UPDATE_PERIOD_IN_MINUTES = 5
@@ -22,6 +23,10 @@ const tokenService = {
     getPriceHistory: (symbol, period) => {
         const token = tokenCache.find( item => item.symbol === symbol)
         return token.history[period]
+    },
+
+    getPortfolioPriceHistory: (portfolio, period) => {
+        return constructPortfolioHistoryData(tokenCache, portfolio, period)
     }
 }
 
