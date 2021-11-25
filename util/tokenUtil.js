@@ -47,12 +47,12 @@ getTokenHistoryData = async (token, period, useStaticData) => {
     }
 
     if (useMessari) {
-        let values = body.data.values.map( value => ({timestamp: new Date(value[0]), price: value[1].toFixed(2)}))
+        let values = body.data.values.map( value => ({timestamp: new Date(value[0]), value: value[1].toFixed(2)}))
         if (period == 'year') values = values.filter( (v,i) => (i % 2) === 0) /* Remove every other entry from year data to get desired period */
         return values
     }
     else {
-        return body.map( value => ({timestamp: new Date(value.time_period_start), price: value.rate_open.toFixed(2)}))
+        return body.map( value => ({timestamp: new Date(value.time_period_start), value: value.rate_open.toFixed(2)}))
     }
 
 }
