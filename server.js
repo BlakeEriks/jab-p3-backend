@@ -13,7 +13,6 @@ const morgan = require("morgan");
 const cors = require("cors");
 const jwt = require("jsonwebtoken")
 // routers
-const PortfolioRouter = require("./controllers/portfolio");
 const UserRouter = require("./controllers/user");
 const TokenRouter = require("./controllers/token")
 const tokenService = require('./tokenService')
