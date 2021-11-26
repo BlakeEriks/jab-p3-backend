@@ -68,6 +68,17 @@ router.get("/portfolio/history/:username/:period", async (req, res) => {
     User.findOne({username: req.params.username}, (err,user) => {
         
         res.json( tokenService.getPortfolioPriceHistory(user.portfolio, req.params.period))
+
+router.get("/portfolio/history/:username", async (req, res) => {
+
+    User.findOne({username: req.params.username}, (err, user) => {
+
+        if (err || !user) {
+            res.status(400).json('User portfolio not found')
+            return
+        }
+
+        res.json(user.portfolio)
     })
 })
 
@@ -75,7 +86,7 @@ router.post("/portfolio/:username", async (req, res) => {
 
     const user = await User.findOne({username: req.params.username})
     user.portfolio.push({...req.body, timestamp: new Date()})
-
+    console.log(user)
     try {
         res.json(await User.findByIdAndUpdate(user._id, user, {new: true}))
     }
