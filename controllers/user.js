@@ -3,6 +3,7 @@ const express = require("express");
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const tokenService = require("../tokenService");
 const {SECRET} = process.env
 
 // Router
@@ -62,6 +63,12 @@ router.get("/portfolio/:username", async (req, res) => {
     })
 })
 
+router.get("/portfolio/history/:username/:period", async (req, res) => {
+
+    User.findOne({username: req.params.username}, (err,user) => {
+        
+        res.json( tokenService.getPortfolioPriceHistory(user.portfolio, req.params.period))
+
 router.get("/portfolio/history/:username", async (req, res) => {
 
     User.findOne({username: req.params.username}, (err, user) => {
@@ -72,7 +79,6 @@ router.get("/portfolio/history/:username", async (req, res) => {
         }
 
         res.json(user.portfolio)
-
     })
 })
 

@@ -1,17 +1,11 @@
 // Dependencies
 const express = require("express")
 const tokenService = require('../tokenService')
-const { PORT = 4000, MONGODB_URL, SECRET, CLIENT_ORIGIN_URL } = process.env;
-const app = express();
 
 // Router
 const router = express.Router()
 
 // Tokens Routes
-router.get('/', (req, res) => {
-    res.json('hello world')
-})
-
 router.get('/tokens/prices', async (req,res) => {
     res.json(await tokenService.getAllPrices())
 })
