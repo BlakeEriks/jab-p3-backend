@@ -12,7 +12,7 @@ const tokenService = {
     },
 
     getAllPrices: () => {
-        return tokenCache.map(token => ({name: token.name, token: token.symbol, price: token.price}))
+        return tokenCache.map(token => ({name: token.name, symbol: token.symbol, price: token.price, percentChange: token.percentChange}))
     },
 
     getPrice: symbol => {

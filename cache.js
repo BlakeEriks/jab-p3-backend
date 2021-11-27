@@ -33,30 +33,36 @@ const runCacheUpdateWorker = (cache, period) => {
 const initializeCache = async cache => {
     
     /* Live Call */
-    // const body = await tokenUtil.getCurrentTokenPrices()
+    const tokenData = await tokenUtil.getCurrentTokenPrices()
 
     /* Static call to data */
-    const body = require('./data/tokenPrices')
+    // const body = require('./data/tokenPrices')
 
-    for (token of body.data) {
-        cache.push({name: token.slug, symbol: token.symbol, price: token.metrics.market_data.price_usd.toFixed(2)})
+    for (token of tokenData) {
+        cache.push({
+            name: token.slug, 
+            symbol: token.symbol, 
+            price: token.metrics.market_data.price_usd.toFixed(2),
+            percentChange: token.metrics.market_data.percent_change_usd_last_24_hours.toFixed(2)
+        })
     }
 }
 
 const updateCache = async (cache) => {
 
     /* Live Call */
-    // const body = await tokenUtil.getCurrentTokenPrices()
+    // const tokenData = await tokenUtil.getCurrentTokenPrices()
 
     /* Static call to local data */
     const body = require('./data/tokenPrices')
 
-    const timestamp = new Date(body.status.timestamp)
+    const timestamp = new Date()
 
-    // for ( (value,index) of body.data) { for each token in body.data
+    // for ( (token, index) of tokenData) { for each token in body.data
     const data = body.data[0] /* static data testing btc, REMOVE THIS WHEN GOING LIVE */
         const newPrice = data.metrics.market_data.price_usd.toFixed(2)
         cache[0].price = newPrice /* Change all 0's to 1's when going live */
+        cache[0].percentChange = token.metrics.market_data.percent_change_usd_last_24_hours.toFixed(2)
         for ( const[period, tokenHistory] of Object.entries(cache[0].history)) {
             const latest = new Date(tokenHistory.values[tokenHistory.values.length - 1].timestamp)
             const deltaTime = timestamp - latest
