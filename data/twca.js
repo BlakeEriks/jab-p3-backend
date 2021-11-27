@@ -1,0 +1,22 @@
+module.exports = [
+    'BTC',
+    'ETH',
+    'BNB',
+    // 'SOL',
+    // 'ADA',
+    // 'XRP',
+    // 'DOT',
+    // 'DOGE',
+    // 'AVAX',
+    // 'SHIB',
+    // 'CRO',
+    // 'LUNA',
+    // 'LTC',
+    // 'UNI',
+    // 'MATIC',
+    // 'LINK',
+    // 'ALGO',
+    // 'MANA',
+    // 'XLM',
+    // 'EGLD'
+]
