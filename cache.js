@@ -1,12 +1,17 @@
 const tokenUtil = require('./util/tokenUtil')
 
+const sleep = ms => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const populateCache = async (cache) => {
 
     const useStaticData = false
     await initializeCache(cache)
 
-    await cache.forEach( async (token, index) => {
-
+    for (let index = 0; index < cache.length; index++) {
+    // await cache.forEach( async (token, index) => {
+        const token = cache[index]
         let tokenHistoryData = {year : {interval: 172800000, values: []},
                             sixMonths : {interval: 86400000, values: []}, 
                             threeMonths : {interval: 43200000, values: []},
@@ -16,16 +21,17 @@ const populateCache = async (cache) => {
 
         for ( [interval, data] of Object.entries(tokenHistoryData) ) {
             data.values = await tokenUtil.getTokenHistoryData(token.symbol, interval, useStaticData)
-            await setTimeout( () => {}, 500)
+            await sleep(2000)
         }
         
         cache[index].history = tokenHistoryData
-    })
+    }//)
 }
 
 const runCacheUpdateWorker = (cache, period) => {
     const PERIOD_IN_MILLIS = period * 60 * 1000
-    
+
+    updateCache(cache)
     setInterval( () => {
         console.log('updating token cache...')
         updateCache(cache)

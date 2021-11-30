@@ -7,7 +7,9 @@ const UPDATE_PERIOD_IN_MINUTES = 1
 const tokenService = {
 
     initialize: async () => {
+        console.log('begin initialize')
         await populateCache(tokenCache)
+        console.log('finish populating cache')
         runCacheUpdateWorker(tokenCache, UPDATE_PERIOD_IN_MINUTES)
     },
 
