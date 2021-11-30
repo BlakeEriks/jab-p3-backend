@@ -76,7 +76,7 @@ const updateCache = async (cache) => {
             const deltaTime = timestamp - latest
             if (deltaTime >= tokenHistory.interval) {
                 const newDate = new Date(latest.getTime() + tokenHistory.interval)
-                tokenHistory.values.push({timestamp: newDate, price: newPrice})
+                tokenHistory.values.push({timestamp: newDate, value: newPrice})
                 tokenHistory.values.shift()
                 console.log(`Added new value to ${token.slug} ${period} history data`)
             }
