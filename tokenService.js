@@ -2,17 +2,17 @@ const {populateCache, runCacheUpdateWorker} = require("./cache")
 const constructPortfolioHistoryData = require("./util/portfolio")
 
 const tokenCache = []
-const UPDATE_PERIOD_IN_MINUTES = 5
+const UPDATE_PERIOD_IN_MINUTES = 1
 
 const tokenService = {
 
     initialize: async () => {
         await populateCache(tokenCache)
-        // runCacheUpdateWorker(tokenCache, UPDATE_PERIOD_IN_MINUTES)
+        runCacheUpdateWorker(tokenCache, UPDATE_PERIOD_IN_MINUTES)
     },
 
     getAllPrices: () => {
-        return tokenCache.map(token => ({name: token.name, token: token.symbol, price: token.price}))
+        return tokenCache.map(token => ({name: token.name, symbol: token.symbol, price: token.price, percentChange: token.percentChange}))
     },
 
     getPrice: symbol => {

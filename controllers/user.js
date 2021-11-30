@@ -64,9 +64,7 @@ router.get("/portfolio/:username", async (req, res) => {
 })
 
 router.get("/portfolio/history/:username/:period", async (req, res) => {
-
     User.findOne({username: req.params.username}, (err,user) => {
-        
         res.json( tokenService.getPortfolioPriceHistory(user.portfolio, req.params.period))
     })
 })
@@ -82,6 +80,13 @@ router.post("/portfolio/:username", async (req, res) => {
     catch (error) {
         res.status(400).json({error})
     }
+})
+
+router.get("/portfolio", async (req,res) => {
+
+    const users = await User.find({})
+    res.json(users.map(user => ({username: user.username, portfolio: user.portfolio[user.portfolio.length - 1]})))
+
 })
 
 // export router

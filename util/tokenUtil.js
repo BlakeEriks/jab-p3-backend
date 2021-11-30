@@ -1,4 +1,5 @@
 const got = require('got')
+const twka = require('../data/twca')
 const { getTimePeriods } = require('./dateUtil')
 
 const messariBaseURL = 'https://data.messari.io/api/v1/assets'
@@ -8,7 +9,7 @@ const messariPeriods = ['year', 'sixMonths', 'threeMonths']
 
 const formatMessariUrl = (token, period) => {
     return !!token ? `${messariBaseURL}/${token}/metrics/price/time-series?start=${period.toISOString()}&end=${today.toISOString()}&interval=1d`
-        : `${messariBaseURL}?fields=slug,symbol,metrics/market_data/price_usd`
+        : `${messariBaseURL}?fields=slug,symbol,metrics/market_data/price_usd,metrics/market_data/percent_change_usd_last_24_hours&limit=30`
 }
 
 const formatCoinApiUrl = (token, start, period) => {
@@ -42,7 +43,7 @@ getTokenHistoryData = async (token, period, useStaticData) => {
         body = getStaticDataForPeriod(period)
     }
     else {
-        const response = useStaticData ? {} : await got(url)
+        const response = await got(url)
         body = JSON.parse(response.body)
     }
 
@@ -59,7 +60,8 @@ getTokenHistoryData = async (token, period, useStaticData) => {
 
 getCurrentTokenPrices = async () => {
     const response = await got(formatMessariUrl())
-    return JSON.parse(response.body)
+    const data = JSON.parse(response.body).data
+    return data.filter(token => twka.includes(token.symbol))
 }
 
 module.exports = {getTokenHistoryData, getCurrentTokenPrices}
