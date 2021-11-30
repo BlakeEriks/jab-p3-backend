@@ -6,6 +6,6 @@ const app = express()
 
 middleware(app)
 
-tokenService.initialize().then(() => {
-    app.listen(PORT, () => console.log('listening'))
-})
+tokenService.initialize()
+
+app.listen(PORT, () => console.log('listening'))
