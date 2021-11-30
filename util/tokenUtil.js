@@ -43,7 +43,7 @@ getTokenHistoryData = async (token, period, useStaticData) => {
         body = getStaticDataForPeriod(period)
     }
     else {
-        const response = useStaticData ? {} : await got(url)
+        const response = await got(url)
         body = JSON.parse(response.body)
     }
 
