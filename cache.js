@@ -21,7 +21,7 @@ const populateCache = async (cache) => {
 
         for ( [interval, data] of Object.entries(tokenHistoryData) ) {
             data.values = await tokenUtil.getTokenHistoryData(token.symbol, interval, useStaticData)
-            await sleep(4000)
+            await sleep(6000)
         }
         
         cache[index].history = tokenHistoryData
