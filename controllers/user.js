@@ -84,7 +84,8 @@ router.post("/portfolio/:username", async (req, res) => {
 
 router.get("/portfolio", async (req,res) => {
 
-    res.json(await User.find({}))
+    const users = await User.find({})
+    res.json(users.map(user => ({username: user.username, portfolio: user.portfolio[user.portfolio.length - 1]})))
 
 })
 
