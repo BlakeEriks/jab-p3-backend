@@ -21,7 +21,7 @@ const populateCache = async (cache) => {
 
         for ( [interval, data] of Object.entries(tokenHistoryData) ) {
             data.values = await tokenUtil.getTokenHistoryData(token.symbol, interval, useStaticData)
-            await sleep(2000)
+            await sleep(6000)
         }
         
         cache[index].history = tokenHistoryData
@@ -76,7 +76,7 @@ const updateCache = async (cache) => {
             const deltaTime = timestamp - latest
             if (deltaTime >= tokenHistory.interval) {
                 const newDate = new Date(latest.getTime() + tokenHistory.interval)
-                tokenHistory.values.push({timestamp: newDate, price: newPrice})
+                tokenHistory.values.push({timestamp: newDate, value: newPrice})
                 tokenHistory.values.shift()
                 console.log(`Added new value to ${token.slug} ${period} history data`)
             }
