@@ -3,9 +3,9 @@ const express = require("express");
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const tokenService = require("../tokenService");
 const requireAuth = require("../util/auth");
 const { isValidPeriod } = require("../util/dateUtil");
+const getPortfolioHistory = require("../util/portfolio");
 const {SECRET} = process.env
 
 // Router
@@ -87,19 +87,21 @@ router.get("/portfolio/history/:username/:period", async (req, res) => {
 
     if (!isValidPeriod(req.params.period)) {
         res.status(400).json('Invalid period')
+        return
     }
 
-    User.findOne({username: req.params.username}, (err,user) => {
+    User.findOne({username: req.params.username}, async (err,user) => {
         if (!user) {
             res.status(400).json('Portfolio history not found')
             return
         }
         try {
-            const tokenHistory = tokenService.getPortfolioPriceHistory(user.portfolio, req.params.period)
-            res.json(tokenHistory)
+            const history = await getPortfolioHistory(user.portfolio, req.params.period)
+            res.json(history)
         }
         catch (err) {
-            res.status(400).json('Error getting user history')
+            console.log(err)
+            res.status(400).json('Error getting user history ' + err)
         }
     })
 })
