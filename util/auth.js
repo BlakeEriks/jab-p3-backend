@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken")
+const {SECRET} = process.env
 
 const requireAuth = (req, res, next) => {
     try{
@@ -15,7 +16,6 @@ const requireAuth = (req, res, next) => {
             res.status(403).json({error: "NO AUTHORIZATION HEADER"});
     }
     } catch (error) {
-        console.log(error)
         res.status(403).json({error});
     }
 }
