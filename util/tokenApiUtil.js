@@ -29,7 +29,7 @@ getTokenHistoryData = async (token, period, useStaticData) => {
 
     let useMessari = messariPeriods.includes(period)
     let url = ''
-
+    console.log(token, period)
     if (period === 'year') url = formatMessariUrl(token, yearAgo)
     if (period === 'sixMonths') url = formatMessariUrl(token, sixMonthsAgo)
     if (period === 'threeMonths') url = formatMessariUrl(token, threeMonthsAgo)
@@ -38,7 +38,7 @@ getTokenHistoryData = async (token, period, useStaticData) => {
     if (period === 'day') url = formatCoinApiUrl(token, dayAgo, '15MIN')
 
     let body = {}
-
+    console.log('url: ' + url)
     if (useStaticData) {
         body = getStaticDataForPeriod(period)
     }
@@ -46,6 +46,7 @@ getTokenHistoryData = async (token, period, useStaticData) => {
         const response = await got(url)
         body = JSON.parse(response.body)
     }
+    console.log('made it for ' + token + ' ' + period)
 
     if (useMessari) {
         let values = body.data.values.map( value => ({timestamp: new Date(value[0]), value: value[1].toFixed(2)}))
