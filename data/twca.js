@@ -18,5 +18,5 @@ module.exports = [
     'ALGO',
     'MANA',
     'XLM',
-    'EGLD'
+    'ICP'
 ]
