@@ -11,12 +11,21 @@ router.get('/tokens/prices', async (req,res) => {
 })
 
 router.get('/tokens/prices/:token', async (req,res) => {
-    res.json(await tokenService.getPrice(req.params.token))
+    try {
+        res.json(await tokenService.getPrice(req.params.token))
+    }
+    catch (err) {
+        res.status(400).json('Error getting token price')
+    }
 })
 
 router.get('/tokens/history/:token/:period', async (req,res) => {
-    res.json(await tokenService.getPriceHistory(req.params.token, req.params.period))
+    const tokenHistory = await tokenService.getPriceHistory(req.params.token, req.params.period)
+    if (!tokenHistory) {
+        res.status(400).json('Error getting token history for ' + req.params.token)
+        return
+    }
+    res.json(tokenHistory)
 })
 
-// export router
 module.exports = router;

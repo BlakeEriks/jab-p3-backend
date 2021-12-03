@@ -4,13 +4,14 @@ const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const tokenService = require("../tokenService");
+const requireAuth = require("../util/auth");
+const { isValidPeriod } = require("../util/dateUtil");
 const {SECRET} = process.env
 
 // Router
 const router = express.Router();
 
 // User Routes
-// gets us the user
 router.post("/authenticate", (req, res) => {
     const { username, password } = req.body
 
@@ -33,7 +34,12 @@ router.post("/authenticate", (req, res) => {
 
 // create user
 router.post("/register", async (req, res) => {
-  
+
+    if (!req.body.password || !req.body.username) {
+        res.status(400).json('Invalid parameters')
+        return
+    }
+
     req.body.password = await bcrypt.hash(req.body.password, await bcrypt.genSalt(10))
     req.body.portfolio = [{timestamp: new Date(), assets: [], balance: 1000000}]
     User.create(req.body, async (err, user) => {
@@ -51,6 +57,10 @@ router.post("/register", async (req, res) => {
 
 router.get("/portfolio/:username", async (req, res) => {
 
+    if (!req.params.username) {
+        res.status(400).json('Invalid username')
+    }
+
     User.findOne({username: req.params.username}, (err, user) => {
 
         if (err || !user) {
@@ -58,27 +68,63 @@ router.get("/portfolio/:username", async (req, res) => {
             return
         }
 
-        res.json(user.portfolio[user.portfolio.length - 1])
-
+        try {
+            const portfolio = user.portfolio[user.portfolio.length - 1]
+            res.json(portfolio)
+        }
+        catch (err) {
+            res.status(400).json('Error getting user portfolio')
+        }
     })
 })
 
 router.get("/portfolio/history/:username/:period", async (req, res) => {
+
+    if (!req.params.username || !req.params.period) {
+        res.status(400).json('Invalid params')
+        return
+    }
+
+    if (!isValidPeriod(req.params.period)) {
+        res.status(400).json('Invalid period')
+    }
+
     User.findOne({username: req.params.username}, (err,user) => {
-        res.json( tokenService.getPortfolioPriceHistory(user.portfolio, req.params.period))
+        if (!user) {
+            res.status(400).json('Portfolio history not found')
+            return
+        }
+        try {
+            const tokenHistory = tokenService.getPortfolioPriceHistory(user.portfolio, req.params.period)
+            res.json(tokenHistory)
+        }
+        catch (err) {
+            res.status(400).json('Error getting user history')
+        }
     })
 })
 
-router.post("/portfolio/:username", async (req, res) => {
+router.post("/portfolio/:username", requireAuth, async (req, res) => {
+
+    if (req.payload.username !== req.params.username) {
+        res.status(403).json('Not authorized to alter other users portfolio')
+        return
+    }
 
     const user = await User.findOne({username: req.params.username})
+    if (!user) {
+        res.status(400).json('Failed to post to portfolio - portfolio not found for user')
+        return
+    }
+
     user.portfolio.push({...req.body, timestamp: new Date()})
 
     try {
-        res.json(await User.findByIdAndUpdate(user._id, user, {new: true}))
+        const portfolio = await User.findByIdAndUpdate(user._id, user, {new: true})
+        res.json(portfolio)
     }
     catch (error) {
-        res.status(400).json({error})
+        res.status(400).json('Failed to update portfolio for user ' + user.username)
     }
 })
 
