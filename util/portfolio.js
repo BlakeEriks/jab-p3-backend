@@ -1,4 +1,5 @@
 const { getTimePeriods } = require("./dateUtil")
+const tokenCache = require('./tokenCache')
 
 const getInterval = period => {
     if( period === 'year') { 
@@ -21,21 +22,23 @@ const getInterval = period => {
     }
 }
 
-const calculateAssetsValue = (tokenCache, assets, date, interval, period) => {
+const calculateAssetsValue = async (assets, date, interval, period) => {
+    const tokenData = await tokenCache.get()
     let value = 0
-    for (const asset of assets) { // {symbol}
-        const token = tokenCache.find( token => token.symbol === asset.symbol)
-        const historyData = token.history[period].values
+    for (const asset of assets) {
+        const token = tokenData.find( token => token.symbol === asset.symbol)
+        if (!token) continue
+        const historyData = token.history.find( hist => hist.period === period)
         const highDate = new Date(date.getTime() + interval)
         const lowDate = new Date(date.getTime() - interval)
-        const historyToken = historyData.find(value => new Date(value.timestamp) >= lowDate && new Date(value.timestamp) <= highDate)
+        const historyToken = historyData.data.find(value => new Date(value.timestamp) >= lowDate && new Date(value.timestamp) <= highDate)
         if (!historyToken) value = 0
-        else value += historyToken.value * asset.quantity
+        else value = historyToken.value * asset.quantity
     }
     return value
 }
 
-const constructPortfolioHistoryData = (tokenCache, portfolio, period) => {
+const getPortfolioHistory = async (portfolio, period) => {
     const {today, getStartDate} = getTimePeriods()
     const startDate = getStartDate(period)
     const interval = getInterval(period)
@@ -49,20 +52,16 @@ const constructPortfolioHistoryData = (tokenCache, portfolio, period) => {
         let curValue = 0
 
         while (curDate < new Date(curPortfolio.timestamp)) {
-            if (portfolio.length > 1) {
-                portfolio.pop()
-                curPortfolio = portfolio[portfolio.length - 1]
-            }
-            else {
-                break
-            }
+            if (portfolio.length == 1) break
+            portfolio.pop()
+            curPortfolio = portfolio[portfolio.length - 1]
         }
         
-        curValue = curPortfolio.balance + calculateAssetsValue(tokenCache, curPortfolio.assets, curDate, interval, period)
+        curValue = curPortfolio.balance + await calculateAssetsValue(curPortfolio.assets, curDate, interval, period)
         historyData.push({timestamp: curDate, value: curValue.toFixed(2)})
         curDate = new Date(curDate.getTime() - interval)
     }
     return {interval, values: historyData}
 }
 
-module.exports = constructPortfolioHistoryData
+module.exports = getPortfolioHistory
