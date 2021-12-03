@@ -1,5 +1,6 @@
-// Depenencies
+// Dependencies
 const mongoose = require("mongoose")
+require("dotenv").config()
 
 // Database Connection
 const MONGODB_URL = process.env.MONGODB_URL
