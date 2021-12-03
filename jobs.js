@@ -7,7 +7,7 @@ const sleep = ms => {
 
 const initDB = async () => {
 
-    const useStaticData = true
+    const useStaticData = false
     await Token.deleteMany({})
     const tokenData = await tokenUtil.getCurrentTokenPrices()
 
