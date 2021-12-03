@@ -34,4 +34,13 @@ const getTimePeriods = () => {
     return {today, dayAgo, weekAgo, monthAgo, threeMonthsAgo, sixMonthsAgo, yearAgo, getStartDate}
 }
 
-module.exports = {getTimePeriods}
+const isValidPeriod = period => {
+    return  period === 'year' || 
+            period === 'sixMonths' || 
+            period === 'threeMonths' || 
+            period === 'month' ||
+            period === 'week' ||
+            period === 'day'
+}
+
+module.exports = {getTimePeriods, isValidPeriod}
