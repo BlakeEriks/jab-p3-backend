@@ -9,7 +9,7 @@ const initDB = async () => {
 
     const useStaticData = false
     await Token.deleteMany({})
-    const tokenData = await tokenUtil.getCurrentTokenPrices()
+    const tokenData = await getCurrentTokenPrices()
 
     for (const token of tokenData) {
         
