@@ -7,8 +7,8 @@ const HistoryDataSchema = new mongoose.Schema({
 }, {_id: false})
 
 const HistorySchema = new mongoose.Schema({
-    period: {type: String, required: true, unique: true},
-    interval: {type: Number, required: true, unique: true},
+    period: {type: String, required: true},
+    interval: {type: Number, required: true},
     data: [HistoryDataSchema]
 }, {_id: false})
 
