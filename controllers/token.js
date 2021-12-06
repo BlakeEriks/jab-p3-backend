@@ -1,21 +1,9 @@
 // Dependencies
 const express = require("express");
-const jobService = require("../jobService");
 const Token = require("../models/token");
 
 // Router
 const router = express.Router()
-
-// Tokens Routes
-router.get('/initialize', async (req,res) => {
-    await jobService.init()
-    res.json('Finished initialization')
-})
-
-router.get('/update', async (req,res) => {
-    await jobService.update()
-    res.json('Finished updating')
-})
 
 router.get('/tokens', async (req,res) => {
     Token.find({}, 'name symbol price percentChange', (err, tokens) => {
@@ -40,7 +28,7 @@ router.get('/tokens/history', async (req,res) => {
 })
 
 router.get('/tokens/:token', async (req,res) => {
-    Token.find({symbol: req.params.token}, 'name symbol price percentChange', (err, token) => {
+    Token.findOne({symbol: req.params.token}, 'name symbol price percentChange', (err, token) => {
         if (err || !token) {
             res.status(400).json('Token not found')
             return
