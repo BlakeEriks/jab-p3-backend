@@ -4,13 +4,13 @@ mongoose = require("./connection")
 const HistoryDataSchema = new mongoose.Schema({
     timestamp: {type: Date, required: true},
     value: {type: Number, required: true}
-})
+}, {_id: false})
 
 const HistorySchema = new mongoose.Schema({
     period: {type: String, required: true},
     interval: {type: Number, required: true},
     data: [HistoryDataSchema]
-})
+}, {_id: false})
 
 const TokenSchema = new mongoose.Schema({
     name: {type: String, required: true, unique: true},
