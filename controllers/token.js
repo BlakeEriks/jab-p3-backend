@@ -27,23 +27,25 @@ router.get('/tokens', async (req,res) => {
     })
 })
 
-router.get('/tokens/prices/:token', async (req,res) => {
-    Token.find({name: req.params.token}, 'name symbol price percentChange', (err, token) => {
-        if (err || !token) {
-            res.status(400).json('Token not found')
-            return
-        }
-        res.json(token)
-    })
-})
-
 router.get('/tokens/history', async (req,res) => {
+    console.log('in all history')
     Token.find({}, (err, tokens) => {
         if (err || !tokens) {
             res.status(400).json('Tokens history not found')
             return
         }
+        console.log(tokens)
         res.json(tokens.map(token => ({symbol: token.symbol, history: token.history})))
+    })
+})
+
+router.get('/tokens/:token', async (req,res) => {
+    Token.find({symbol: req.params.token}, 'name symbol price percentChange', (err, token) => {
+        if (err || !token) {
+            res.status(400).json('Token not found')
+            return
+        }
+        res.json(token)
     })
 })
 
