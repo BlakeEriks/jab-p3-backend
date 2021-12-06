@@ -32,8 +32,10 @@ const calculateAssetsValue = async (assets, date, interval, period) => {
         const highDate = new Date(date.getTime() + interval)
         const lowDate = new Date(date.getTime() - interval)
         const historyToken = historyData.data.find(value => new Date(value.timestamp) >= lowDate && new Date(value.timestamp) <= highDate)
-        if (!historyToken) value = 0
-        else value = historyToken.value * asset.quantity
+        if (!historyToken) {
+            console.log('no data between ' + lowDate.toISOString() +' and ' + highDate.toISOString() +' for ' + token.symbol)
+        }
+        else value += historyToken.value * asset.quantity
     }
     return value
 }
@@ -61,7 +63,7 @@ const getPortfolioHistory = async (portfolio, period) => {
         historyData.push({timestamp: curDate, value: curValue.toFixed(2)})
         curDate = new Date(curDate.getTime() - interval)
     }
-    return {interval, values: historyData}
+    return {interval, data: historyData}
 }
 
 module.exports = getPortfolioHistory
