@@ -1,5 +1,6 @@
 const Token = require('./models/token');
 const { getTokenHistoryData, getCurrentTokenPrices } = require('./util/tokenApiUtil');
+const { invalidateCache } = require('./util/tokenCache');
 
 const sleep = ms => {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -64,6 +65,8 @@ const updateDB = async () => {
             await Token.findByIdAndUpdate(dbToken._id, dbToken, {new: true})
         }
     }
+
+    invalidateCache()
 }
 
 module.exports = {initDB, updateDB}
