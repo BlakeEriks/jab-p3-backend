@@ -5,7 +5,7 @@ var tokenCache = []
 var lastSync = new Date()
 
 const get = async () => {
-    if (new Date().getTime() - lastSync.getTime() > 600000) {
+    if (new Date().getTime() - lastSync.getTime() > 60000) {
         isStale = true
     }
 
